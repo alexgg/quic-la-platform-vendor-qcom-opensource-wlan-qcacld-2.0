@@ -807,7 +807,7 @@ VOS_STATUS hdd_chan_change_notify(hdd_adapter_t *hostapd_adapter,
 
 	freq = vos_chan_to_freq(oper_chan);
 
-	chan = __ieee80211_get_channel(hostapd_adapter->wdev.wiphy, freq);
+	chan = ieee80211_get_channel(hostapd_adapter->wdev.wiphy, freq);
 
 	if (!chan) {
 		VOS_TRACE(VOS_MODULE_ID_HDD, VOS_TRACE_LEVEL_ERROR,
