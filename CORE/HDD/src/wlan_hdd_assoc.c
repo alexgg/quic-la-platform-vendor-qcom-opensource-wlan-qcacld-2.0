@@ -1282,6 +1282,9 @@ static void hdd_SendReAssocEvent(struct net_device *dev,
     tANI_U32 rspRsnLength = 0;
     struct ieee80211_channel *chan;
     hdd_context_t *pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0))
+    struct cfg80211_roam_info roam_info = {};
+#endif
 
     if (!rspRsnIe) {
         hddLog(LOGE, FL("Unable to allocate RSN IE"));
@@ -1325,9 +1328,21 @@ static void hdd_SendReAssocEvent(struct net_device *dev,
 
     chan = ieee80211_get_channel(pAdapter->wdev.wiphy,
                                  (int)pCsrRoamInfo->pBssDesc->channelId);
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0))
+    roam_info.channel = chan;
+    roam_info.bssid = pCsrRoamInfo->bssid;
+    roam_info.req_ie = reqRsnIe;
+    roam_info.req_ie_len = reqRsnLength;
+    roam_info.resp_ie = rspRsnIe;
+    roam_info.resp_ie_len = rspRsnLength;
+
+    cfg80211_roamed(dev, &roam_info, GFP_KERNEL);
+#else
     cfg80211_roamed(dev, chan, pCsrRoamInfo->bssid,
                     reqRsnIe, reqRsnLength,
                     rspRsnIe, rspRsnLength,GFP_KERNEL);
+#endif
 done:
     kfree(rspRsnIe);
 }
@@ -1414,6 +1429,9 @@ static eHalStatus hdd_AssociationCompletionHandler( hdd_adapter_t *pAdapter, tCs
     hdd_adapter_t *sap_adapter;
     hdd_ap_ctx_t *hdd_ap_ctx;
     uint8_t default_sap_channel = 6;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0))
+    struct cfg80211_roam_info roam_info = {}; 
+#endif
 #ifdef WLAN_FEATURE_ROAM_OFFLOAD
     if (pRoamInfo && pRoamInfo->roamSynchInProgress) {
        /* change logging before release */
@@ -1632,9 +1650,20 @@ static eHalStatus hdd_AssociationCompletionHandler( hdd_adapter_t *pAdapter, tCs
                                              (int)pRoamInfo->pBssDesc->channelId);
                         hddLog(LOG1, "assocReqlen %d assocRsplen %d", assocReqlen,
                                              assocRsplen);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0))
+			roam_info.channel = chan;
+			roam_info.bssid = pRoamInfo->bssid;
+			roam_info.req_ie = pFTAssocReq;
+			roam_info.req_ie_len = assocReqlen;
+			roam_info.resp_ie = pFTAssocRsp;
+    			roam_info.resp_ie_len = assocRsplen;
+
+    			cfg80211_roamed(dev, &roam_info, GFP_KERNEL);
+#else
                         cfg80211_roamed(dev,chan, pRoamInfo->bssid,
                                          pFTAssocReq, assocReqlen, pFTAssocRsp, assocRsplen,
                                         GFP_KERNEL);
+#endif
                     }
                     if (sme_GetFTPTKState(WLAN_HDD_GET_HAL_CTX(pAdapter),
                                           pAdapter->sessionId))
