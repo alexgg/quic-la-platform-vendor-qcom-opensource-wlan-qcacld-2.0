@@ -109,10 +109,16 @@ static void tryAllowingSleep( VOS_TIMER_TYPE type )
   this parameter for LP32 and LP64 architectures.
 
   --------------------------------------------------------------------------*/
-
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+static void vos_linux_timer_callback (struct timer_list *t)
+{
+   vos_timer_platform_t * platformInfo = from_timer(platformInfo, t, Timer);
+   vos_timer_t *timer = container_of(platformInfo, vos_timer_t, platformInfo);
+#else
 static void vos_linux_timer_callback (unsigned long data)
 {
    vos_timer_t *timer = ( vos_timer_t *)data;
+#endif
    vos_msg_t msg;
    VOS_STATUS vStatus;
    unsigned long flags;
@@ -445,7 +451,7 @@ VOS_STATUS vos_timer_init_debug( vos_timer_t *timer, VOS_TIMER_TYPE timerType,
    spin_lock_init(&timer->platformInfo.spinlock);
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
-   setup_timer(&(timer->platformInfo.Timer), vos_linux_timer_callback, timer);
+   timer_setup(&(timer->platformInfo.Timer), vos_linux_timer_callback, 0);
 #else
     init_timer(&(timer->platformInfo.Timer));
     timer->platformInfo.Timer.function = vos_linux_timer_callback;
@@ -479,7 +485,7 @@ VOS_STATUS vos_timer_init( vos_timer_t *timer, VOS_TIMER_TYPE timerType,
    spin_lock_init(&timer->platformInfo.spinlock);
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
-   setup_timer(&(timer->platformInfo.Timer), vos_linux_timer_callback, timer);
+   timer_setup(&(timer->platformInfo.Timer), vos_linux_timer_callback, 0);
 #else
    init_timer(&(timer->platformInfo.Timer));
    timer->platformInfo.Timer.function = vos_linux_timer_callback;

@@ -56,7 +56,7 @@ __adf_os_timer_init(adf_os_handle_t      hdl,
                     void                *arg)
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
-	setup_timer(&timer, func, arg);
+	timer_setup(timer, (void (*)(struct timer_list *))func, 0);
 #else
     init_timer(timer);
     timer->function = (adf_dummy_timer_func_t)func;

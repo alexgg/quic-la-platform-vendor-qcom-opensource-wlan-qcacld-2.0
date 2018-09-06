@@ -1708,7 +1708,11 @@ static void hdd_ssr_timer_del(void)
     ssr_timer_started = false;
 }
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0))
 static void hdd_ssr_timer_cb(unsigned long data)
+#else
+static void hdd_ssr_timer_cb(struct timer_list *unused)
+#endif
 {
     hddLog(VOS_TRACE_LEVEL_FATAL, "%s: HDD SSR timer expired!", __func__);
     VOS_BUG(0);
@@ -1747,7 +1751,7 @@ VOS_STATUS hdd_wlan_shutdown(void)
 
    /* If SSR never completes, then do kernel panic. */
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))   
-   setup_timer(&ssr_timer, hdd_ssr_timer_cb, NULL);
+   timer_setup(&ssr_timer, hdd_ssr_timer_cb, 0);
 #else
    init_timer(&ssr_timer);
 #endif
