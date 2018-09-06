@@ -276,7 +276,7 @@ endif
 
 ############ COMMON ############
 COMMON_DIR :=	CORE/SERVICES/COMMON
-COMMON_INC :=	-I$(WLAN_ROOT)/$(COMMON_DIR)
+COMMON_INC :=	-I$(WLAN_ROOT)/$(COMMON_DIR) -Iinclude/generated/uapi/
 
 ############ ADF ##############
 ADF_DIR	:=	$(COMMON_DIR)/adf
