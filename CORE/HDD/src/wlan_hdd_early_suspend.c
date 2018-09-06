@@ -1701,10 +1701,6 @@ void hdd_set_wlan_suspend_mode(bool suspend)
     vos_ssr_unprotect(__func__);
 }
 
-static void hdd_ssr_timer_init(void)
-{
-    init_timer(&ssr_timer);
-}
 
 static void hdd_ssr_timer_del(void)
 {
@@ -1726,7 +1722,9 @@ static void hdd_ssr_timer_start(int msec)
                "it's running!", __func__);
     }
     ssr_timer.expires = jiffies + msecs_to_jiffies(msec);
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,14,0))   
     ssr_timer.function = hdd_ssr_timer_cb;
+#endif
     add_timer(&ssr_timer);
     ssr_timer_started = true;
 }
@@ -1748,7 +1746,11 @@ VOS_STATUS hdd_wlan_shutdown(void)
 #endif
 
    /* If SSR never completes, then do kernel panic. */
-   hdd_ssr_timer_init();
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))   
+   setup_timer(&ssr_timer, hdd_ssr_timer_cb, NULL);
+#else
+   init_timer(&ssr_timer);
+#endif
    hdd_ssr_timer_start(HDD_SSR_BRING_UP_TIME);
 
    /* Get the global VOSS context. */

@@ -443,9 +443,15 @@ VOS_STATUS vos_timer_init_debug( vos_timer_t *timer, VOS_TIMER_TYPE timerType,
    // set the various members of the timer structure
    // with arguments passed or with default values
    spin_lock_init(&timer->platformInfo.spinlock);
-   init_timer(&(timer->platformInfo.Timer));
-   timer->platformInfo.Timer.function = vos_linux_timer_callback;
-   timer->platformInfo.Timer.data = (unsigned long)timer;
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+   setup_timer(&(timer->platformInfo.Timer), vos_linux_timer_callback, timer);
+#else
+    init_timer(&(timer->platformInfo.Timer));
+    timer->platformInfo.Timer.function = vos_linux_timer_callback;
+    timer->platformInfo.Timer.data = (unsigned long)timer;
+#endif
+
    timer->callback = callback;
    timer->userData = userData;
    timer->type = timerType;
@@ -471,9 +477,14 @@ VOS_STATUS vos_timer_init( vos_timer_t *timer, VOS_TIMER_TYPE timerType,
    // set the various members of the timer structure
    // with arguments passed or with default values
    spin_lock_init(&timer->platformInfo.spinlock);
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+   setup_timer(&(timer->platformInfo.Timer), vos_linux_timer_callback, timer);
+#else
    init_timer(&(timer->platformInfo.Timer));
    timer->platformInfo.Timer.function = vos_linux_timer_callback;
    timer->platformInfo.Timer.data = (unsigned long)timer;
+#endif
    timer->callback = callback;
    timer->userData = userData;
    timer->type = timerType;

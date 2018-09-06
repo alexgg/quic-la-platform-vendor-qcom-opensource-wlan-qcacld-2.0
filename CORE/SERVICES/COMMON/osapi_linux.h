@@ -169,11 +169,17 @@ typedef spinlock_t                      A_MUTEX_T;
 
 typedef struct timer_list               A_TIMER;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,14,0))
+#define A_INIT_TIMER(pTimer, pFunction, pArg) do {              \
+	setup_timer(&pTimer, pFunction, pArg);
+} while (0)
+#else
 #define A_INIT_TIMER(pTimer, pFunction, pArg) do {              \
     init_timer(pTimer);                                         \
     (pTimer)->function = (pFunction);                           \
     (pTimer)->data   = (unsigned long)(pArg);                   \
 } while (0)
+#endif
 
 /*
  * Start a Timer that elapses after 'periodMSec' milli-seconds
