@@ -1687,7 +1687,9 @@ VOS_STATUS hdd_rx_packet_cbk(v_VOID_t *vosContext,
 #ifdef QCA_PKT_PROTO_TRACE
    v_U8_t proto_type;
 #endif /* QCA_PKT_PROTO_TRACE */
+#if defined (QCA_VENDOR_KERNEL)
    hdd_station_ctx_t *pHddStaCtx = NULL;
+#endif
 
    //Sanity check on inputs
    if ((NULL == vosContext) || (NULL == rxBuf))
@@ -1720,6 +1722,7 @@ VOS_STATUS hdd_rx_packet_cbk(v_VOID_t *vosContext,
        return eHAL_STATUS_FAILURE;
    }
 
+#if defined (QCA_VENDOR_KERNEL)
    pHddStaCtx = WLAN_HDD_GET_STATION_CTX_PTR(pAdapter);
    if ((pHddStaCtx->conn_info.proxyARPService) &&
          cfg80211_is_gratuitous_arp_unsolicited_na(skb))
@@ -1730,6 +1733,7 @@ VOS_STATUS hdd_rx_packet_cbk(v_VOID_t *vosContext,
         kfree_skb(skb);
         return VOS_STATUS_SUCCESS;
    }
+#endif
 
 #ifdef FEATURE_WLAN_TDLS
 #endif
