@@ -757,7 +757,11 @@ static void pktlog_vclose(struct vm_area_struct *vma)
 }
 
 #if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,25)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0)
+int pktlog_fault(struct vm_fault *vmf)
+#else
 int pktlog_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
+#endif
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0))
 	unsigned long address = (unsigned long)vmf->address;
@@ -767,7 +771,11 @@ int pktlog_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	if (address == 0UL)
 		return VM_FAULT_NOPAGE;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,10,0))
+	if (vmf->pgoff > vmf->vma->vm_end)
+#else
 	if (vmf->pgoff > vma->vm_end)
+#endif
 		return VM_FAULT_SIGBUS;
 
 	get_page(virt_to_page((void *)address));
