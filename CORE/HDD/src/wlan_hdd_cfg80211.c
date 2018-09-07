@@ -12029,7 +12029,9 @@ static int __wlan_hdd_cfg80211_get_station(struct wiphy *wiphy,
     }
 
     wlan_hdd_get_rssi(pAdapter, &sinfo->signal);
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,9,0))
     sinfo->filled |= STATION_INFO_SIGNAL;
+#endif
 
 #ifdef WLAN_FEATURE_LPSS
     if (!pAdapter->rssi_send) {
@@ -12442,10 +12444,15 @@ static int __wlan_hdd_cfg80211_get_station(struct wiphy *wiphy,
 #endif //LINKSPEED_DEBUG_ENABLED
         }
     }
+
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,9,0))
     sinfo->filled |= STATION_INFO_TX_BITRATE;
+#endif
 
     sinfo->tx_bytes = pAdapter->stats.tx_bytes;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,9,0))
     sinfo->filled |= STATION_INFO_TX_BYTES;
+#endif
 
     sinfo->tx_packets =
        pAdapter->hdd_stats.summary_stat.tx_frm_cnt[0] +
@@ -12465,16 +12472,22 @@ static int __wlan_hdd_cfg80211_get_station(struct wiphy *wiphy,
        pAdapter->hdd_stats.summary_stat.fail_cnt[2] +
        pAdapter->hdd_stats.summary_stat.fail_cnt[3];
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,9,0))
     sinfo->filled |=
        STATION_INFO_TX_PACKETS |
        STATION_INFO_TX_RETRIES |
        STATION_INFO_TX_FAILED;
+#endif
 
     sinfo->rx_bytes = pAdapter->stats.rx_bytes;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,9,0))
     sinfo->filled |= STATION_INFO_RX_BYTES;
+#endif
 
     sinfo->rx_packets = pAdapter->stats.rx_packets;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,9,0))
     sinfo->filled |= STATION_INFO_RX_PACKETS;
+#endif
 
     MTRACE(vos_trace(VOS_MODULE_ID_HDD,
                      TRACE_CODE_HDD_CFG80211_GET_STA,
