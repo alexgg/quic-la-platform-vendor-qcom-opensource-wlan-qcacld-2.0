@@ -1287,7 +1287,9 @@ VOS_STATUS hdd_softap_rx_packet_cbk(v_VOID_t *vosContext,
       ++pAdapter->hdd_stats.hddTxRxStats.rxRefused;
    }
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,11,0))
    pAdapter->dev->last_rx = jiffies;
+#endif
 
    return VOS_STATUS_SUCCESS;
 }
