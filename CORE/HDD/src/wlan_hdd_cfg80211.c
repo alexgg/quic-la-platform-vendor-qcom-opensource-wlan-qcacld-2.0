@@ -4466,7 +4466,11 @@ int wlan_hdd_cfg80211_init(struct device *dev,
 #ifdef FEATURE_WLAN_SCAN_PNO
     if (pCfg->configPNOScanSupport)
     {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0))
+	wiphy->max_sched_scan_reqs = 1;
+#else
         wiphy->flags |= WIPHY_FLAG_SUPPORTS_SCHED_SCAN;
+#endif
         wiphy->max_sched_scan_ssids = SIR_PNO_MAX_SUPP_NETWORKS;
         wiphy->max_match_sets       = SIR_PNO_MAX_SUPP_NETWORKS;
         wiphy->max_sched_scan_ie_len = SIR_MAC_MAX_IE_LENGTH;
@@ -4676,7 +4680,11 @@ void wlan_hdd_cfg80211_update_wiphy_caps(struct wiphy *wiphy)
     * control comes here. Here just we need to clear it if firmware doesn't
     * have PNO support. */
    if (!pCfg->PnoOffload) {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0))
+       wiphy->max_sched_scan_reqs = 0;
+#else
        wiphy->flags &= ~WIPHY_FLAG_SUPPORTS_SCHED_SCAN;
+#endif
        wiphy->max_sched_scan_ssids = 0;
        wiphy->max_match_sets = 0;
        wiphy->max_sched_scan_ie_len = 0;
