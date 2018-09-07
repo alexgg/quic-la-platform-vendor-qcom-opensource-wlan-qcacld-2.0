@@ -12986,7 +12986,11 @@ static void __exit hdd_module_exit(void)
 
 #ifdef MODULE
 static int fwpath_changed_handler(const char *kmessage,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0))
+                                 const struct kernel_param *kp)
+#else
                                  struct kernel_param *kp)
+#endif
 {
    return param_set_copystring(kmessage, kp);
 }
@@ -13041,7 +13045,11 @@ static int kickstart_driver(void)
 
   --------------------------------------------------------------------------*/
 static int fwpath_changed_handler(const char *kmessage,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0))
+                                  const struct kernel_param *kp)
+#else
                                   struct kernel_param *kp)
+#endif
 {
    int ret;
 
