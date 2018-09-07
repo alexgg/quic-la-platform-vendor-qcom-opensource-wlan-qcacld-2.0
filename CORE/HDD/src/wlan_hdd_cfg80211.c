@@ -13522,7 +13522,11 @@ static int wlan_hdd_cfg80211_sched_scan_start(struct wiphy *wiphy,
  * Function to disable PNO
  */
 static int __wlan_hdd_cfg80211_sched_scan_stop(struct wiphy *wiphy,
-          struct net_device *dev)
+          struct net_device *dev
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0))
+	  , u64 reqid
+#endif
+	  )
 {
     eHalStatus status = eHAL_STATUS_FAILURE;
     hdd_adapter_t *pAdapter = WLAN_HDD_GET_PRIV_PTR(dev);
@@ -13620,12 +13624,20 @@ static int __wlan_hdd_cfg80211_sched_scan_stop(struct wiphy *wiphy,
  * NL interface to disable PNO
  */
 static int wlan_hdd_cfg80211_sched_scan_stop(struct wiphy *wiphy,
-          struct net_device *dev)
+          struct net_device *dev
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0))
+	, u64 reqid
+#endif
+	  )
 {
     int ret;
 
     vos_ssr_protect(__func__);
-    ret = __wlan_hdd_cfg80211_sched_scan_stop(wiphy, dev);
+    ret = __wlan_hdd_cfg80211_sched_scan_stop(wiphy, dev
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,11,0))
+					      , reqid
+#endif
+		    );
     vos_ssr_unprotect(__func__);
 
     return ret;
