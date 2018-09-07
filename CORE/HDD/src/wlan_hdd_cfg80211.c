@@ -7109,7 +7109,9 @@ void* wlan_hdd_change_country_code_cb(void *pAdapter)
 static int __wlan_hdd_cfg80211_change_iface(struct wiphy *wiphy,
                                             struct net_device *ndev,
                                             enum nl80211_iftype type,
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0))
                                             u32 *flags,
+#endif
                                             struct vif_params *params)
 {
     struct wireless_dev *wdev;
@@ -7433,13 +7435,19 @@ done:
 static int wlan_hdd_cfg80211_change_iface(struct wiphy *wiphy,
                                           struct net_device *ndev,
                                           enum nl80211_iftype type,
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0))
                                           u32 *flags,
+#endif
                                           struct vif_params *params)
 {
     int ret;
 
     vos_ssr_protect(__func__);
-    ret = __wlan_hdd_cfg80211_change_iface(wiphy, ndev, type, flags, params);
+    ret = __wlan_hdd_cfg80211_change_iface(wiphy, ndev, type,
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0))
+		                           flags,
+#endif
+					   params);
     vos_ssr_unprotect(__func__);
 
     return ret;

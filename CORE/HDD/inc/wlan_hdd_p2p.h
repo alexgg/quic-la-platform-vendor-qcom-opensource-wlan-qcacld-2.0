@@ -169,7 +169,9 @@ struct wireless_dev *wlan_hdd_add_virtual_intf(struct wiphy *wiphy,
                                                const char *name,
                                                unsigned char name_assign_type,
                                                enum nl80211_iftype type,
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0))
                                                u32 *flags,
+#endif
                                                struct vif_params *params);
 #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3,7,0)) || defined(WITH_BACKPORTS)
 struct wireless_dev* wlan_hdd_add_virtual_intf(

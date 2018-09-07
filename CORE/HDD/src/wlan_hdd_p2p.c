@@ -1832,7 +1832,10 @@ struct wireless_dev* __wlan_hdd_add_virtual_intf(
                   struct wiphy *wiphy, const char *name,
                   unsigned char name_assign_type,
                   enum nl80211_iftype type,
-                  u32 *flags, struct vif_params *params )
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0))
+                  u32 *flags,
+#endif
+		  struct vif_params *params )
 {
     hdd_context_t *pHddCtx = (hdd_context_t*) wiphy_priv(wiphy);
     hdd_adapter_t* pAdapter = NULL;
@@ -1921,14 +1924,20 @@ struct wireless_dev *wlan_hdd_add_virtual_intf(struct wiphy *wiphy,
                                                const char *name,
                                                unsigned char name_assign_type,
                                                enum nl80211_iftype type,
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0))
                                                u32 *flags,
+#endif
                                                struct vif_params *params)
 {
     struct wireless_dev *wdev;
 
     vos_ssr_protect(__func__);
     wdev = __wlan_hdd_add_virtual_intf(wiphy, name, name_assign_type,
-                                       type, flags, params);
+                                       type,
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,10,0))
+				       flags,
+#endif
+				       params);
     vos_ssr_unprotect(__func__);
     return wdev;
 }
