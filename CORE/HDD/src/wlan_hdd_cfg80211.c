@@ -9505,7 +9505,7 @@ int __wlan_hdd_cfg80211_scan( struct wiphy *wiphy,
           hddLog(VOS_TRACE_LEVEL_ERROR, "%s: TDLS teardown is ongoing %d",
                  __func__, status);
 
-        return status;
+      return status;
     }
 #endif
 
@@ -15918,13 +15918,13 @@ wlan_hdd_cfg80211_extscan_cached_results_ind(void *ctx,
                   pData->ap[i].ieLength))
                 goto fail;
 
-                if (pData->ap[i].ieLength)
-                    if (nla_put(skb,
-                      QCA_WLAN_VENDOR_ATTR_EXTSCAN_RESULTS_SCAN_RESULT_IE_DATA,
-                      pData->ap[i].ieLength, pData->ap[i].ieData))
-                        goto fail;
+            if (pData->ap[i].ieLength)
+                if (nla_put(skb,
+                  QCA_WLAN_VENDOR_ATTR_EXTSCAN_RESULTS_SCAN_RESULT_IE_DATA,
+                  pData->ap[i].ieLength, pData->ap[i].ieData))
+                      goto fail;
 
-              nla_nest_end(skb, ap);
+            nla_nest_end(skb, ap);
         }
         nla_nest_end(skb, aps);
 
