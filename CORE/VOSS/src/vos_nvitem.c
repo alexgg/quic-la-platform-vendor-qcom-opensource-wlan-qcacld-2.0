@@ -1125,10 +1125,12 @@ VOS_STATUS vos_nv_getRegDomainFromCountryCode( v_REGDOMAIN_t *pRegDomain,
         }
 
     } else if (COUNTRY_IE == source || COUNTRY_USER == source) {
+#if defined (QCA_VENDOR_KERNEL)
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,9,0)) || defined(WITH_BACKPORTS)
         regulatory_hint_user(country_code, NL80211_USER_REG_HINT_USER);
 #else
         regulatory_hint_user(country_code);
+#endif
 #endif
     }
 
