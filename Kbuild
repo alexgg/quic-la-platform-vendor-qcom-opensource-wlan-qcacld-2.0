@@ -121,6 +121,9 @@ endif
 
 # Feature flags which are not (currently) configurable via Kconfig
 
+# Whether building for a mainline or QCA vendor kernel
+QCA_VENDOR_KERNEL := 1
+
 #Whether to build debug version
 BUILD_DEBUG_VERSION ?= 1
 
@@ -957,6 +960,10 @@ endif
 
 ifeq ($(CONFIG_NL80211_TESTMODE), y)
 CDEFINES += -DWLAN_NL80211_TESTMODE
+endif
+
+ifeq ($(QCA_VENDOR_KERNEL), 1)
+CDEFINES += -DQCA_VENDOR_KERNEL
 endif
 
 ifeq ($(CONFIG_ARCH_MSM), y)
