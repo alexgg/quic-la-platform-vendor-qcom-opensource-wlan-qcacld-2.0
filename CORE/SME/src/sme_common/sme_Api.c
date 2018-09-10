@@ -11606,6 +11606,7 @@ void sme_UpdateEnableSSR(tHalHandle hHal, tANI_BOOLEAN enableSSR)
     return;
 }
 
+#if defined(WLAN_DEBUG)
 /*
  * SME API to stringify bonding mode. (hostapd convention)
  */
@@ -11635,6 +11636,7 @@ static const char* sme_CBMode2String( tANI_U32 mode)
          return "Unknown";
    }
 }
+#endif
 
 /*
  * SME API to adjust bonding mode to regulatory, dfs nol .. etc.

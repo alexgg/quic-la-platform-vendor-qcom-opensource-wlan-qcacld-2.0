@@ -2239,7 +2239,9 @@ void hdd_indicateMgmtFrame( hdd_adapter_t *pAdapter,
                 vos_mem_compare(&pbFrames[WLAN_HDD_PUBLIC_ACTION_FRAME_OFFSET+2], SIR_MAC_P2P_OUI, SIR_MAC_P2P_OUI_SIZE))
             // P2P action frames
             {
+#if defined(WLAN_DEBUG)
                 u8 *macFrom = &pbFrames[WLAN_HDD_80211_FRM_DA_OFFSET+6];
+#endif
                 actionFrmType = pbFrames[WLAN_HDD_PUBLIC_ACTION_FRAME_TYPE_OFFSET];
                 hddLog(LOG1, "Rx Action Frame %u", actionFrmType);
 #ifdef WLAN_FEATURE_P2P_DEBUG

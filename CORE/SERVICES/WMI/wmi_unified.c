@@ -143,6 +143,7 @@ wmi_buf_alloc(wmi_unified_t wmi_handle, u_int16_t len)
 	return wmi_buf;
 }
 
+#if defined(WLAN_DEBUG)
 static u_int8_t* get_wmi_cmd_string(WMI_CMD_ID wmi_command)
 {
 	switch(wmi_command)
@@ -683,6 +684,7 @@ static u_int8_t* get_wmi_cmd_string(WMI_CMD_ID wmi_command)
         }
 	return "Invalid WMI cmd";
 }
+#endif
 
 /* WMI command API */
 int wmi_unified_cmd_send(wmi_unified_t wmi_handle, wmi_buf_t buf, int len,

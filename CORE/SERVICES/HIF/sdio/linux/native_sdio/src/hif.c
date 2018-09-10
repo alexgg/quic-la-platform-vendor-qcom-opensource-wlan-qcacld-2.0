@@ -678,6 +678,7 @@ static int async_task(void *param)
     return 0;
 }
 
+#ifdef UNUSED
 static A_INT32 IssueSDCommand(HIF_DEVICE *device, A_UINT32 opcode, A_UINT32 arg, A_UINT32 flags, A_UINT32 *resp)
 {
     struct mmc_command cmd;
@@ -700,6 +701,8 @@ static A_INT32 IssueSDCommand(HIF_DEVICE *device, A_UINT32 opcode, A_UINT32 arg,
 
     return err;
 }
+#endif
+
 A_STATUS ReinitSDIO(HIF_DEVICE *device)
 {
     A_INT32 err = 0;
@@ -2025,7 +2028,9 @@ static HIF_DEVICE *
 addHifDevice(struct sdio_func *func)
 {
     HIF_DEVICE *hifdevice = NULL;
+#if defined(WLAN_DEBUG)
     int ret = 0;
+#endif
     ENTER();
     if (func == NULL)
         return NULL;

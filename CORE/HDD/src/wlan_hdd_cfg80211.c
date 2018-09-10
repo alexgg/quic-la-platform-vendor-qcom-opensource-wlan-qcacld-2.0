@@ -9137,6 +9137,12 @@ static eHalStatus hdd_cfg80211_scan_done_callback(tHalHandle halHandle,
     unsigned long rc;
     int ret = 0;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,8,0)) && !defined(WITH_BACKPORTS)
+    struct cfg80211_scan_info info = {
+        .aborted = aborted,
+    };
+#endif
+
     ENTER();
 
     hddLog(VOS_TRACE_LEVEL_INFO,
@@ -9236,9 +9242,6 @@ static eHalStatus hdd_cfg80211_scan_done_callback(tHalHandle halHandle,
     }
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,8,0)) && !defined(WITH_BACKPORTS)
-    struct cfg80211_scan_info info = {
-        .aborted = aborted,
-    };
     cfg80211_scan_done(req, &info);
 #else
     cfg80211_scan_done(req, aborted);
@@ -9353,6 +9356,12 @@ static void wlan_hdd_cfg80211_scan_block_cb(struct work_struct *work)
                                    hdd_adapter_t, scan_block_work);
     struct cfg80211_scan_request *request = adapter->request;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,8,0)) && !defined(WITH_BACKPORTS)
+    struct cfg80211_scan_info info = {
+        .aborted = true,
+    };
+#endif
+
     request->n_ssids = 0;
     request->n_channels = 0;
 
@@ -9360,9 +9369,6 @@ static void wlan_hdd_cfg80211_scan_block_cb(struct work_struct *work)
             "%s:##In DFS Master mode. Scan aborted. Null result sent",
              __func__);
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,8,0)) && !defined(WITH_BACKPORTS)
-    struct cfg80211_scan_info info = {
-        .aborted = true,
-    };
     cfg80211_scan_done(request, &info);
 #else
     cfg80211_scan_done(request, true);
@@ -13869,7 +13875,7 @@ static int wlan_hdd_cfg80211_tdls_mgmt(struct wiphy *wiphy,
     INIT_COMPLETION(pAdapter->tdls_mgmt_comp);
 
     status = sme_SendTdlsMgmtFrame(WLAN_HDD_GET_HAL_CTX(pAdapter),
-                                   pAdapter->sessionId, peer, action_code,
+                                   pAdapter->sessionId, (tANI_U8 *) peer, action_code,
                                    dialog_token, status_code, peer_capability,
                                    (tANI_U8 *)buf, len, !responder);
 
@@ -14131,7 +14137,7 @@ static int __wlan_hdd_cfg80211_tdls_oper(struct wiphy *wiphy,
 
                         sme_SendTdlsLinkEstablishParams(WLAN_HDD_GET_HAL_CTX(pAdapter),
                                                         pAdapter->sessionId,
-                                                        peer,
+                                                        (tANI_U8 *) peer,
                                                         &tdlsLinkEstablishParams);
                         /* Send TDLS peer UAPSD capabilities to the firmware and
                          * register with the TL on after the response for this operation
@@ -14299,7 +14305,7 @@ static int __wlan_hdd_cfg80211_tdls_oper(struct wiphy *wiphy,
                     INIT_COMPLETION(pAdapter->tdls_del_station_comp);
 
                     sme_DeleteTdlsPeerSta(WLAN_HDD_GET_HAL_CTX(pAdapter),
-                            pAdapter->sessionId, peer);
+                            pAdapter->sessionId, (tANI_U8 *) peer);
 
                     rc = wait_for_completion_timeout(&pAdapter->tdls_del_station_comp,
                               msecs_to_jiffies(WAIT_TIME_TDLS_DEL_STA));
