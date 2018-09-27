@@ -9795,63 +9795,59 @@ int iw_set_two_ints_getnone(struct net_device *dev,
 
 static const iw_handler      we_handler[] =
 {
-   (iw_handler) iw_set_commit,      /* SIOCSIWCOMMIT */
-   (iw_handler) iw_get_name,      /* SIOCGIWNAME */
-   (iw_handler) NULL,            /* SIOCSIWNWID */
-   (iw_handler) NULL,            /* SIOCGIWNWID */
-   (iw_handler) iw_set_freq,      /* SIOCSIWFREQ */
-   (iw_handler) iw_get_freq,      /* SIOCGIWFREQ */
-   (iw_handler) iw_set_mode,      /* SIOCSIWMODE */
-   (iw_handler) iw_get_mode,      /* SIOCGIWMODE */
-   (iw_handler) NULL,              /* SIOCSIWSENS */
-   (iw_handler) NULL,              /* SIOCGIWSENS */
-   (iw_handler) NULL,             /* SIOCSIWRANGE */
-   (iw_handler) iw_get_range,      /* SIOCGIWRANGE */
-   (iw_handler) NULL,       /* SIOCSIWPRIV */
-   (iw_handler) NULL,             /* SIOCGIWPRIV */
-   (iw_handler) NULL,             /* SIOCSIWSTATS */
-   (iw_handler) NULL,             /* SIOCGIWSTATS */
+   [IW_IOCTL_IDX(SIOCSIWCOMMIT)]   = (iw_handler) iw_set_commit,
+   [IW_IOCTL_IDX(SIOCGIWNAME)]     = (iw_handler) iw_get_name,
+   [IW_IOCTL_IDX(SIOCSIWNWID)]     = (iw_handler) NULL,
+   [IW_IOCTL_IDX(SIOCGIWNWID)]     = (iw_handler) NULL,
+   [IW_IOCTL_IDX(SIOCSIWFREQ)]     = (iw_handler) iw_set_freq,
+   [IW_IOCTL_IDX(SIOCGIWFREQ)]     = (iw_handler) iw_get_freq,
+   [IW_IOCTL_IDX(SIOCSIWMODE)]     = (iw_handler) iw_set_mode,
+   [IW_IOCTL_IDX(SIOCGIWMODE)]     = (iw_handler) iw_get_mode,
+   [IW_IOCTL_IDX(SIOCSIWSENS)]     = (iw_handler) NULL,
+   [IW_IOCTL_IDX(SIOCGIWSENS)]     = (iw_handler) NULL,
+   [IW_IOCTL_IDX(SIOCSIWRANGE)]    = (iw_handler) NULL,
+   [IW_IOCTL_IDX(SIOCGIWRANGE)]    = (iw_handler) iw_get_range,
+   [IW_IOCTL_IDX(SIOCSIWPRIV)]     = (iw_handler) NULL,
+   [IW_IOCTL_IDX(SIOCGIWPRIV)]     = (iw_handler) NULL,
+   [IW_IOCTL_IDX(SIOCSIWSTATS)]    = (iw_handler) NULL,
+   [IW_IOCTL_IDX(SIOCGIWSTATS)]    = (iw_handler) NULL,
 #ifdef WEXT_SPY
-   iw_handler_set_spy,             /* SIOCSIWSPY */
-   iw_handler_get_spy,             /* SIOCGIWSPY */
-   iw_handler_set_thrspy,         /* SIOCSIWTHRSPY */
-   iw_handler_get_thrspy,         /* SIOCGIWTHRSPY */
+   [IW_IOCTL_IDX(SIOCSIWSPY)]      = iw_handler_set_spy,
+   [IW_IOCTL_IDX(SIOCGIWSPY)]      = iw_handler_get_spy,
+   [IW_IOCTL_IDX(SIOCSIWTHRSPY)]   = iw_handler_set_thrspy,
+   [IW_IOCTL_IDX(SIOCGIWTHRSPY)]   = iw_handler_get_thrspy,
 #endif
-   (iw_handler) iw_set_ap_address,   /* SIOCSIWAP */
-   (iw_handler) iw_get_ap_address,   /* SIOCGIWAP */
-   (iw_handler) iw_set_mlme,              /* SIOCSIWMLME */
-   (iw_handler) NULL,              /* SIOCGIWAPLIST */
-   (iw_handler) iw_set_scan,      /* SIOCSIWSCAN */
-   (iw_handler) iw_get_scan,      /* SIOCGIWSCAN */
-   (iw_handler) iw_set_essid,      /* SIOCSIWESSID */
-   (iw_handler) iw_get_essid,      /* SIOCGIWESSID */
-   (iw_handler) iw_set_nick,      /* SIOCSIWNICKN */
-   (iw_handler) iw_get_nick,      /* SIOCGIWNICKN */
-   (iw_handler) NULL,             /* -- hole -- */
-   (iw_handler) NULL,             /* -- hole -- */
-   (iw_handler) iw_set_bitrate,   /* SIOCSIWRATE */
-   (iw_handler) iw_get_bitrate,   /* SIOCGIWRATE */
-   (iw_handler) iw_set_rts_threshold,/* SIOCSIWRTS */
-   (iw_handler) iw_get_rts_threshold,/* SIOCGIWRTS */
-   (iw_handler) iw_set_frag_threshold,   /* SIOCSIWFRAG */
-   (iw_handler) iw_get_frag_threshold,   /* SIOCGIWFRAG */
-   (iw_handler) iw_set_tx_power,      /* SIOCSIWTXPOW */
-   (iw_handler) iw_get_tx_power,      /* SIOCGIWTXPOW */
-   (iw_handler) iw_set_retry,          /* SIOCSIWRETRY */
-   (iw_handler) iw_get_retry,          /* SIOCGIWRETRY */
-   (iw_handler) iw_set_encode,          /* SIOCSIWENCODE */
-   (iw_handler) iw_get_encode,          /* SIOCGIWENCODE */
-   (iw_handler) iw_set_power_mode,      /* SIOCSIWPOWER */
-   (iw_handler) iw_get_power_mode,      /* SIOCGIWPOWER */
-   (iw_handler) NULL,                 /* -- hole -- */
-   (iw_handler) NULL,                /* -- hole -- */
-   (iw_handler) iw_set_genie,      /* SIOCSIWGENIE */
-   (iw_handler) iw_get_genie,      /* SIOCGIWGENIE */
-   (iw_handler) iw_set_auth,      /* SIOCSIWAUTH */
-   (iw_handler) iw_get_auth,      /* SIOCGIWAUTH */
-   (iw_handler) iw_set_encodeext,   /* SIOCSIWENCODEEXT */
-   (iw_handler) iw_get_encodeext,   /* SIOCGIWENCODEEXT */
-   (iw_handler) NULL,         /* SIOCSIWPMKSA */
+   [IW_IOCTL_IDX(SIOCSIWAP)]       = (iw_handler) iw_set_ap_address,
+   [IW_IOCTL_IDX(SIOCGIWAP)]       = (iw_handler) iw_get_ap_address,
+   [IW_IOCTL_IDX(SIOCSIWMLME)]     = (iw_handler) iw_set_mlme,
+   [IW_IOCTL_IDX(SIOCGIWAPLIST)]   = (iw_handler) NULL,
+   [IW_IOCTL_IDX(SIOCSIWSCAN)]     = (iw_handler) iw_set_scan,
+   [IW_IOCTL_IDX(SIOCGIWSCAN)]     = (iw_handler) iw_get_scan,
+   [IW_IOCTL_IDX(SIOCSIWESSID)]    = (iw_handler) iw_set_essid,
+   [IW_IOCTL_IDX(SIOCGIWESSID)]    = (iw_handler) iw_get_essid,
+   [IW_IOCTL_IDX(SIOCSIWNICKN)]    = (iw_handler) iw_set_nick,
+   [IW_IOCTL_IDX(SIOCGIWNICKN)]    = (iw_handler) iw_get_nick,
+   [IW_IOCTL_IDX(SIOCSIWRATE)]     = (iw_handler) iw_set_bitrate,
+   [IW_IOCTL_IDX(SIOCGIWRATE)]     = (iw_handler) iw_get_bitrate,
+   [IW_IOCTL_IDX(SIOCSIWRTS)]      = (iw_handler) iw_set_rts_threshold,
+   [IW_IOCTL_IDX(SIOCGIWRTS)]      = (iw_handler) iw_get_rts_threshold,
+   [IW_IOCTL_IDX(SIOCSIWFRAG)]     = (iw_handler) iw_set_frag_threshold,
+   [IW_IOCTL_IDX(SIOCGIWFRAG)]     = (iw_handler) iw_get_frag_threshold,
+   [IW_IOCTL_IDX(SIOCSIWTXPOW)]    = (iw_handler) iw_set_tx_power,
+   [IW_IOCTL_IDX(SIOCGIWTXPOW)]    = (iw_handler) iw_get_tx_power,
+   [IW_IOCTL_IDX(SIOCSIWRETRY)]    = (iw_handler) iw_set_retry,
+   [IW_IOCTL_IDX(SIOCGIWRETRY)]    = (iw_handler) iw_get_retry,
+   [IW_IOCTL_IDX(SIOCSIWENCODE)]   = (iw_handler) iw_set_encode,
+   [IW_IOCTL_IDX(SIOCGIWENCODE)]   = (iw_handler) iw_get_encode,
+   [IW_IOCTL_IDX(SIOCSIWPOWER)]    = (iw_handler) iw_set_power_mode,
+   [IW_IOCTL_IDX(SIOCGIWPOWER)]    = (iw_handler) iw_get_power_mode,
+   [IW_IOCTL_IDX(SIOCSIWGENIE)]    = (iw_handler) iw_set_genie,
+   [IW_IOCTL_IDX(SIOCGIWGENIE)]    = (iw_handler) iw_get_genie,
+   [IW_IOCTL_IDX(SIOCSIWAUTH)]     = (iw_handler) iw_set_auth,
+   [IW_IOCTL_IDX(SIOCGIWAUTH)]     = (iw_handler) iw_get_auth,
+   [IW_IOCTL_IDX(SIOCSIWENCODEEXT)]= (iw_handler) iw_set_encodeext,
+   [IW_IOCTL_IDX(SIOCGIWENCODEEXT)]= (iw_handler) iw_get_encodeext,
+   [IW_IOCTL_IDX(SIOCSIWPMKSA)]    = (iw_handler) NULL,
 };
 
 static const iw_handler we_private[] = {
