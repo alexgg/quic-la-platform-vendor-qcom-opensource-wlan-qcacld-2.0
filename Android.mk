@@ -1,111 +1,34 @@
-# Android makefile for the WLAN Module
+LOCAL_PATH:= $(call my-dir)
+include $(CLEAR_VARS)
 
-# Assume no targets will be supported
-WLAN_CHIPSET :=
+DRIVER_SRC_BASE:= $(LOCAL_PATH)
+ANDROID_ROOT:= $(CURDIR)
 
-# Build/Package options for 8084/8092/8960/8994 target
-ifeq ($(call is-board-platform-in-list, apq8084 mpq8092 msm8960 msm8994),true)
-	WLAN_CHIPSET     := qca_cld
-	WLAN_SELECT      := CONFIG_QCA_CLD_WLAN=m
-endif
+# As we use external compilation to build the kernel we need to use the kernel
+# objects directory to build the module. For the module 'clean' rule the kernel
+# source directory is enough.
+LINUXPATH_SRC = $(ANDROID_ROOT)/kernel_imx
+LINUXPATH_OBJ = $(ANDROID_ROOT)/$(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ
+CROSS_COMPILE = $(ANDROID_TOOLCHAIN)/arm-linux-androideabi-
 
-# Build/Package only in case of supported target
-ifneq ($(WLAN_CHIPSET),)
+KERNEL_PATH = $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ
+KERNEL_SRC = $(KERNEL_PATH)
 
-LOCAL_PATH := $(call my-dir)
+mod_cleanup := $(ANDROID_ROOT)/$(DRIVER_SRC_BASE)/dummy
 
-# This makefile is only for DLKM
-ifneq ($(findstring vendor,$(LOCAL_PATH)),)
+$(mod_cleanup) :
+	$(MAKE) -C $(DRIVER_SRC_BASE) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) clean
 
-# Determine if we are Proprietary or Open Source
-ifneq ($(findstring opensource,$(LOCAL_PATH)),)
-    WLAN_PROPRIETARY := 0
-    WLAN_OPEN_SOURCE := 1
-else
-    WLAN_PROPRIETARY := 1
-    WLAN_OPEN_SOURCE := 0
-endif
+qca6564_module_file := wlan.ko
+$(DRIVER_SRC_BASE)/$(qca6564_module_file): kernelimage $(ACP)
+	KERNEL_PATH=$(KERNEL_PATH) KERNEL_SRC=$(KERNEL_SRC) $(MAKE) ARCH=arm -C $(DRIVER_SRC_BASE) CROSS_COMPILE=$(CROSS_COMPILE) MAKEFLAGS= CONFIG_CLD_HL_SDIO_CORE=y CONFIG_LINUX_QCMBR=y WLAN_OPEN_SOURCE=1 MODNAME=wlan CONFIG_QCA_WIFI_ISOC=0 CONFIG_QCA_WIFI_2_0=1 CONFIG_QCA_CLD_WLAN=m WLAN_OPEN_SOURCE=1 CONFIG_NON_QC_PLATFORM=y BUILD_DEBUG_VERSION=0 KBUILD_OPTIONS=WLAN_ROOT=$(ANDROID_ROOT)/$(DRIVER_SRC_BASE)
 
-ifeq ($(WLAN_PROPRIETARY),1)
-    WLAN_BLD_DIR := vendor/qcom/proprietary/wlan-noship
-else
-    WLAN_BLD_DIR := vendor/qcom/opensource/wlan
-endif
-
-# DLKM_DIR was moved for JELLY_BEAN (PLATFORM_SDK 16)
-ifeq ($(call is-platform-sdk-version-at-least,16),true)
-       DLKM_DIR := $(TOP)/device/qcom/common/dlkm
-else
-       DLKM_DIR := build/dlkm
-endif
-
-# Copy WCNSS_cfg.dat and WCNSS_qcom_cfg.ini file from firmware_bin/ folder to target out directory.
-ifeq ($(call is-board-platform-in-list, msm8960),true)
-$(shell rm -f $(TARGET_OUT_ETC)/firmware/wlan/qca_cld/WCNSS_cfg.dat)
-$(shell rm -f $(TARGET_OUT_ETC)/firmware/wlan/qca_cld/WCNSS_qcom_cfg.ini)
-$(shell cp $(LOCAL_PATH)/firmware_bin/WCNSS_cfg.dat $(TARGET_OUT_ETC)/firmware/wlan/qca_cld)
-$(shell cp $(LOCAL_PATH)/firmware_bin/WCNSS_qcom_cfg.ini $(TARGET_OUT_ETC)/firmware/wlan/qca_cld)
-endif
-
-###########################################################
-# This is set once per LOCAL_PATH, not per (kernel) module
-KBUILD_OPTIONS := WLAN_ROOT=../$(WLAN_BLD_DIR)/qcacld-2.0
-# We are actually building wlan.ko here, as per the
-# requirement we are specifying <chipset>_wlan.ko as LOCAL_MODULE.
-# This means we need to rename the module to <chipset>_wlan.ko
-# after wlan.ko is built.
-KBUILD_OPTIONS += MODNAME=wlan
-KBUILD_OPTIONS += BOARD_PLATFORM=$(TARGET_BOARD_PLATFORM)
-KBUILD_OPTIONS += $(WLAN_SELECT)
-KBUILD_OPTIONS += WLAN_OPEN_SOURCE=$(WLAN_OPEN_SOURCE)
+qca6564_clean: $(mod_cleanup)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE              := $(WLAN_CHIPSET)_wlan.ko
-LOCAL_MODULE_KBUILD_NAME  := wlan.ko
-LOCAL_MODULE_TAGS         := debug
-LOCAL_MODULE_DEBUG_ENABLE := true
-LOCAL_MODULE_PATH         := $(TARGET_OUT)/lib/modules/$(WLAN_CHIPSET)
-include $(DLKM_DIR)/AndroidKernelModule.mk
-###########################################################
-
-# Create Symbolic link for built <WLAN_CHIPSET>_wlan.ko driver from
-# standard module location.
-# TO-DO: This step needs to be moved to a post-build make target instead
-# TO-DO: as this may run multiple times
-$(shell mkdir -p $(TARGET_OUT)/lib/modules; \
-    ln -sf /system/lib/modules/$(WLAN_CHIPSET)/$(WLAN_CHIPSET)_wlan.ko \
-           $(TARGET_OUT)/lib/modules/wlan.ko)
-$(shell ln -sf /persist/wlan_mac.bin $(TARGET_OUT_ETC)/firmware/wlan/qca_cld/wlan_mac.bin)
-
-ifeq ($(call is-board-platform-in-list, msm8960),true)
-$(shell ln -sf /firmware/image/bdwlan20.bin $(TARGET_OUT_ETC)/firmware/fakeboar.bin)
-$(shell ln -sf /firmware/image/otp20.bin $(TARGET_OUT_ETC)/firmware/otp.bin)
-$(shell ln -sf /firmware/image/utf20.bin $(TARGET_OUT_ETC)/firmware/utf.bin)
-$(shell ln -sf /firmware/image/qwlan20.bin $(TARGET_OUT_ETC)/firmware/athwlan.bin)
-
-$(shell ln -sf /firmware/image/bdwlan20.bin $(TARGET_OUT_ETC)/firmware/bdwlan20.bin)
-$(shell ln -sf /firmware/image/otp20.bin $(TARGET_OUT_ETC)/firmware/otp20.bin)
-$(shell ln -sf /firmware/image/utf20.bin $(TARGET_OUT_ETC)/firmware/utf20.bin)
-$(shell ln -sf /firmware/image/qwlan20.bin $(TARGET_OUT_ETC)/firmware/qwlan20.bin)
-
-$(shell ln -sf /firmware/image/bdwlan30.bin $(TARGET_OUT_ETC)/firmware/bdwlan30.bin)
-$(shell ln -sf /firmware/image/otp30.bin $(TARGET_OUT_ETC)/firmware/otp30.bin)
-$(shell ln -sf /firmware/image/utf30.bin $(TARGET_OUT_ETC)/firmware/utf30.bin)
-$(shell ln -sf /firmware/image/qwlan30.bin $(TARGET_OUT_ETC)/firmware/qwlan30.bin)
-endif
-
-# Copy config ini files to target
-ifeq ($(call is-board-platform-in-list, msm8994),false)
-ifeq ($(WLAN_PROPRIETARY),1)
-$(shell mkdir -p $(TARGET_OUT)/etc/firmware/wlan/$(WLAN_CHIPSET))
-$(shell mkdir -p $(TARGET_OUT)/etc/wifi)
-$(shell rm -f $(TARGET_OUT)/etc/wifi/WCNSS_qcom_cfg.ini)
-$(shell rm -f $(TARGET_OUT)/etc/firmware/wlan/$(WLAN_SHIPSET)/WCNSS_cfg.dat)
-$(shell cp $(LOCAL_PATH)/firmware_bin/WCNSS_qcom_cfg.ini $(TARGET_OUT)/etc/wifi)
-$(shell cp $(LOCAL_PATH)/firmware_bin/WCNSS_cfg.dat $(TARGET_OUT)/etc/firmware/wlan/$(WLAN_CHIPSET))
-endif
-endif
-
-endif # DLKM check
-
-endif # supported target check
+LOCAL_MODULE := wlan.ko
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_CLASS := ETC
+LOCAL_MODULE_PATH := $(TARGET_COPY_OUT_VENDOR)/lib/modules
+LOCAL_SRC_FILES := $(qca6564_module_file)
+include $(BUILD_PREBUILT)
