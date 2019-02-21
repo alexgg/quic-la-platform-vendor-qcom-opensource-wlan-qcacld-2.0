@@ -6631,10 +6631,11 @@ static int wlan_hdd_cfg80211_stop_ap (struct wiphy *wiphy,
     hdd_adapter_list_node_t *pAdapterNode = NULL;
     hdd_adapter_list_node_t *pNext        = NULL;
 
-    ENTER();
-
     tHalHandle hHal = WLAN_HDD_GET_HAL_CTX(pAdapter);
     tpAniSirGlobal pMac = PMAC_STRUCT( hHal );
+
+    ENTER();
+
 	if(pAdapter->device_mode == WLAN_HDD_P2P_GO)
 	{
 		hddLog(VOS_TRACE_LEVEL_INFO, FL("Start to stop p2p Go then set reject_ongoing_connect_removego to 1"));
@@ -7125,13 +7126,13 @@ static int __wlan_hdd_cfg80211_change_iface(struct wiphy *wiphy,
     VOS_STATUS vstatus;
     eHalStatus hstatus;
     int status;
+    tHalHandle hHal = WLAN_HDD_GET_HAL_CTX(pAdapter);
+    tpAniSirGlobal pMac = PMAC_STRUCT( hHal );
 
     ENTER();
 
     pHddCtx = WLAN_HDD_GET_CTX(pAdapter);
     status = wlan_hdd_validate_context(pHddCtx);
-	tHalHandle hHal = WLAN_HDD_GET_HAL_CTX(pAdapter);
-    tpAniSirGlobal pMac = PMAC_STRUCT( hHal );
     if (0 != status) {
         hddLog(LOGE, FL("HDD context is not valid"));
         return status;
