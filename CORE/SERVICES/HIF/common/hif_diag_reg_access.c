@@ -329,7 +329,7 @@ ar6k_ReadHostIntStatusRegs(HIF_DEVICE *hif_device)
     MBOX_IRQ_PROC_REGISTERS IrqProcRegisters;
     A_STATUS status = A_OK;
 
-    memset(&IrqProcRegisters, sizeof(IrqProcRegisters), 0);
+    memset(&IrqProcRegisters, 0, sizeof(IrqProcRegisters));
     status = HIFReadWrite(hif_device,
                 HOST_INT_STATUS_ADDRESS,
                 (A_UINT8 *) &IrqProcRegisters,
