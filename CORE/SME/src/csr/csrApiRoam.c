@@ -8712,8 +8712,6 @@ void csrRoamingStateMsgProcessor( tpAniSirGlobal pMac, void *pMsgBuf )
     tSirSmeRsp *pSmeRsp;
     tSmeIbssPeerInd *pIbssPeerInd;
     tCsrRoamInfo roamInfo;
-    tSirSmeDisassocRsp* pDisassocRsp;
-    tCsrRoamSession  *pSession;
         // TODO Session Id need to be acquired in this function
         tANI_U32 sessionId = 0;
     pSmeRsp = (tSirSmeRsp *)pMsgBuf;
