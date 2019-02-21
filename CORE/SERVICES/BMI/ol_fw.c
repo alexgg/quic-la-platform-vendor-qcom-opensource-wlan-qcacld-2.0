@@ -885,7 +885,7 @@ u_int32_t ol_fw_axi_size;
 int write_to_file(int file_no, uint8 *buf, int size)
 {
 	int ret = 0;
-	struct file *fp;
+	struct file *fp = NULL;
 	mm_segment_t old_fs;
 	loff_t pos = 0;
 
