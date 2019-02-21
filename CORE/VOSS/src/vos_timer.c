@@ -877,7 +877,13 @@ v_TIME_t vos_timer_get_system_ticks( v_VOID_t )
   ------------------------------------------------------------------------*/
 v_TIME_t vos_timer_get_system_time( v_VOID_t )
 {
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,19,0))
    struct timeval tv;
    do_gettimeofday(&tv);
    return tv.tv_sec*1000 + tv.tv_usec/1000;
+#else
+   struct timespec64 ts64;
+   ktime_get_real_ts64(&ts64);
+   return ts64.tv_sec*MSEC_PER_SEC + ts64.tv_nsec/NSEC_PER_MSEC;
+#endif
 }
